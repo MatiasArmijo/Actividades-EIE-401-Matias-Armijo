@@ -1,0 +1,72 @@
+import cv2
+import numpy as np
+import zipfile
+import os
+from multiprocessing import Pool
+
+# Función para cargar imágenes desde un archivo ZIP
+def cargar_imagenes_zip(zip_path):
+    imagenes = []
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        for archivo in zip_ref.namelist():
+            if archivo.endswith(".jpg") or archivo.endswith(".png"):
+                with zip_ref.open(archivo) as file:
+                    img_array = np.frombuffer(file.read(), np.uint8)
+                    img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)  # Cargar en color
+                    imagenes.append((archivo, img))
+    return imagenes
+
+# Función para realizar el template matching y clasificar la imagen
+def template_matching_clasificacion(args):
+    img_name, img, plantillas, umbral, directorios_clasificacion = args
+    max_val_global = 0
+    mejor_plantilla = None
+    
+    for nombre_clase, plantilla in plantillas.items():
+        metodo = cv2.TM_CCOEFF_NORMED
+        res = cv2.matchTemplate(img, plantilla, metodo)
+        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+        if max_val > max_val_global:
+            max_val_global = max_val
+            mejor_plantilla = nombre_clase
+    
+    if max_val_global > umbral:
+        resultado_path = os.path.join(directorios_clasificacion[mejor_plantilla], os.path.basename(img_name))
+        cv2.imwrite(resultado_path, img)
+    else:
+        # Si no coincide con ninguna plantilla, guardar en una carpeta de "sin coincidencia"
+        resultado_path = os.path.join(directorios_clasificacion['no_match'], os.path.basename(img_name))
+        cv2.imwrite(resultado_path, img)
+
+# Rutas y directorios
+zip_path = 'imagenes.zip'
+directorio_resultados = 'resultados'
+umbral = 0.8
+
+# Crear directorios de clasificación si no existen
+directorios_clasificacion = {
+    'box': os.path.join(directorio_resultados, 'box'),
+    'circ': os.path.join(directorio_resultados, 'circ'),
+    'cross': os.path.join(directorio_resultados, 'cross'),
+    'no_match': os.path.join(directorio_resultados, 'no_match')
+}
+
+for directorio in directorios_clasificacion.values():
+    os.makedirs(directorio, exist_ok=True)
+
+# Cargar plantillas
+plantillas = {
+    'box': cv2.imread('box_template.jpg', cv2.IMREAD_COLOR),
+    'circ': cv2.imread('circ_template.jpg', cv2.IMREAD_COLOR),
+    'cross': cv2.imread('cross_template.jpg', cv2.IMREAD_COLOR)
+}
+
+# Cargar imágenes desde el archivo ZIP
+imagenes = cargar_imagenes_zip(zip_path)
+
+# Preparar los argumentos para el multiprocesamiento
+args = [(img_name, img, plantillas, umbral, directorios_clasificacion) for img_name, img in imagenes]
+
+# Procesar las imágenes usando multiprocesamiento
+with Pool() as pool:
+    pool.map(template_matching_clasificacion, args)
