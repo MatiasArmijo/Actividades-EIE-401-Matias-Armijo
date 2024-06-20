@@ -16,13 +16,46 @@ def cargar_imagenes_zip(zip_path):
                     imagenes.append((archivo, img))
     return imagenes
 
+# Función para aplicar transformaciones básicas
+def aplicar_transformaciones(img):
+    # Reducción de tamaño
+    img = cv2.resize(img, (img.shape[1] // 2, img.shape[0] // 2))
+    
+    # Normalización
+    img = cv2.normalize(img, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
+    
+    # Filtrado Gaussiano
+    img = cv2.GaussianBlur(img, (5, 5), 0)
+    
+    return img
+
+# Función para aplicar operaciones adicionales (segmentación y convolución)
+def aplicar_operaciones(img):
+    # Segmentación simple (umbralización adaptativa)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                cv2.THRESH_BINARY, 11, 2)
+    
+    # Convolución - Detección de bordes
+    img = cv2.Canny(img, 50, 150)
+    
+    return img
+
 # Función para realizar el template matching y clasificar la imagen
 def template_matching_clasificacion(args):
     img_name, img, plantillas, umbral, directorios_clasificacion = args
     max_val_global = 0
     mejor_plantilla = None
     
+    # Aplicar transformaciones y operaciones a la imagen
+    img = aplicar_transformaciones(img)
+    img = aplicar_operaciones(img)
+    
     for nombre_clase, plantilla in plantillas.items():
+        # Aplicar transformaciones y operaciones a la plantilla
+        plantilla = aplicar_transformaciones(plantilla)
+        plantilla = aplicar_operaciones(plantilla)
+        
         metodo = cv2.TM_CCOEFF_NORMED
         res = cv2.matchTemplate(img, plantilla, metodo)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
