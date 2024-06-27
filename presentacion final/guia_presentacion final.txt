@@ -1,0 +1,30 @@
+
+* Diapositiva 1: Título e Introducción
+Título: Introducción a la Lidar Toolbox de MATLAB
+Introducción: Breve presentación de lo que es Lidar y su relevancia en la actualidad. Menciona brevemente lo que cubrirás en la presentación.
+
+* Diapositiva 2: Marco Teórico
+Definición de Lidar: Explica qué es Lidar y cómo funciona.
+Importancia del Lidar: Comenta la importancia del Lidar en diversas industrias como la automotriz, geoespacial y de realidad aumentada.
+
+* Diapositiva 3: Sistemas de Coordenadas en Lidar Toolbox
+Conceptos Básicos: Explica los sistemas de coordenadas utilizados en la toolbox.
+Relevancia: Por qué es crucial entender estos sistemas para trabajar con datos Lidar.
+
+* Diapositiva 4: Calibración de Lidar-Cámara y Nubes de Puntos
+Calibración de Lidar-Cámara: Explica qué es y por qué es importante.
+Nubes de Puntos: Diferencia entre nubes de puntos organizadas y desorganizadas.
+
+* Diapositiva 5: Segmentación de Suelo y Tuning de Parámetros
+Segmentación de Suelo: Qué es y su importancia en el procesamiento de datos Lidar.
+Tuning de Parámetros: Cómo ajustar parámetros para obtener mejores resultados.
+
+* Diapositiva 6: Aplicaciones y Herramientas en la Toolbox
+Lidar Camera Calibrator: Introducción rápida.
+Lidar Viewer: Uso y funcionalidades principales.
+PointPillars y PointNet++: Introducción a estas herramientas para detección de objetos y segmentación semántica utilizando deep learning.
+
+* Diapositiva 7: Conclusiones y Referencias
+Conclusiones: Resumen de los puntos clave discutidos.
+Relevancia del Tema: Cómo esta toolbox facilita el trabajo con datos Lidar y su impacto en la investigación y aplicaciones industriales.
+Referencias: Incluye al menos tres referencias adicionales, como artículos académicos o documentación relevante.
